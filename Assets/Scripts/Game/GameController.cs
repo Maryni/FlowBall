@@ -63,13 +63,14 @@ public class GameController : MonoBehaviour
             ()=>moveToTarget.Move());
         wallCollision.SetActionOnStartCollision(()=>wallCollision.SetCurrentDirection(moveToTarget.Direction));
         wallCollision.SetActionOnFinishCollision(
-            ()=>moveToTarget.SetDirection(wallCollision.ReflectedDirection),
+            ()=>moveToTarget.SetDirection(-wallCollision.ReflectedDirection),
             ()=>moveToTarget.UseForce());
         levelChanger.SetAction(
             ()=>boxDestroyer.SetBoxesActive(),
             ()=>navMeshAgent.speed+=addEnemySpeed,
             ()=>protectorAgent.PlayerResetPosition());
-        boxDestroyer.SetAction(()=>levelChanger.ChangeLevel());
+        boxDestroyer.SetActionOnAllCollision(()=>moveToTarget.Move());
+        boxDestroyer.SetActionOnThirdCollision(()=>levelChanger.ChangeLevel());
     }
 
     #endregion

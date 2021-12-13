@@ -14,7 +14,12 @@ public class BoxDestroyer : MonoBehaviour
     #region private variables
     
     private int destroyCount=0;
-    private UnityAction actionOnCollision;
+    /// <summary>
+    /// But before third collision
+    /// </summary>
+    private UnityAction actionOnAllCollision;
+    private UnityAction actionOnThirdCollision;
+
     
     #endregion
 
@@ -34,9 +39,10 @@ public class BoxDestroyer : MonoBehaviour
             collision.gameObject.SetActive(false);
             boxes.Add(collision.gameObject);
             destroyCount++;
+            actionOnAllCollision?.Invoke();
             if (destroyCount == 3)
             {
-                actionOnCollision?.Invoke();
+                actionOnThirdCollision?.Invoke();
                 SetCountZero();
             }
             
@@ -47,9 +53,16 @@ public class BoxDestroyer : MonoBehaviour
 
     #region public functions
 
-    public void SetAction(UnityAction action)
+    public void SetActionOnAllCollision(params UnityAction[] actions)
     {
-        actionOnCollision = action;
+        for (int i = 0; i < actions.Length; i++)
+        {
+            actionOnAllCollision += actions[i];
+        }
+    }
+    public void SetActionOnThirdCollision(UnityAction action)
+    {
+        actionOnThirdCollision += action;
     }
 
     public void SetBoxesActive()

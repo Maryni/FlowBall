@@ -5,9 +5,8 @@ public class MoveToTarget : MonoBehaviour
 {
     #region Inspector variables
     
-    [SerializeField] private float modVelocity;
-    [SerializeField] private LayerMask layer;
-    [SerializeField] private Rigidbody rig;
+    [SerializeField] private float modVelocity; 
+    
     [SerializeField] private bool moveSecondVar;
 
     #endregion
@@ -19,6 +18,7 @@ public class MoveToTarget : MonoBehaviour
     [SerializeField]private Vector3 direction;
     private float magnitudeDirection;
     private float tempMagnitedeDirection;
+    private Rigidbody rig;
     
     #endregion
 
@@ -36,6 +36,10 @@ public class MoveToTarget : MonoBehaviour
     private void Start()
     {
         tempMagnitedeDirection = magnitudeDirection;
+        if (rig == null)
+        {
+            rig = GetComponent<Rigidbody>();
+        }
     }
 
     private void FixedUpdate()
