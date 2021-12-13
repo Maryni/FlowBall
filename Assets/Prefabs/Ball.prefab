@@ -229,14 +229,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf8d5f3afc605554fa7eb9964bc783c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modVelocity: 1
-  modReducedVelocity: 0.85
+  modVelocity: 12
   layer:
     serializedVersion: 2
     m_Bits: 256
-  targPos: {x: 0, y: 0, z: 0}
-  targPosEnd: {x: 0, y: 0, z: 0}
-  direction: {x: 0, y: 0, z: 0}
   rig: {fileID: 4250174685212958410}
   moveSecondVar: 0
 --- !u!114 &4609167442320933829
@@ -252,7 +248,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boxes: []
-  levelChanger: {fileID: 0}
 --- !u!114 &1131856817
 MonoBehaviour:
   m_ObjectHideFlags: 0

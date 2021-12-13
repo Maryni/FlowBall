@@ -1,18 +1,25 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class MoveToTarget : MonoBehaviour
 {
     #region Inspector variables
     
     [SerializeField] private float modVelocity;
-    [SerializeField] private float modReducedVelocity;
     [SerializeField] private LayerMask layer;
-    [SerializeField] private Vector3 targPos;
-    [SerializeField] private Vector3 targPosEnd;
-    [SerializeField] private Vector3 direction;
     [SerializeField] private Rigidbody rig;
     [SerializeField] private bool moveSecondVar;
 
+    #endregion
+
+    #region private variables
+    
+    [SerializeField]private Vector3 targPos;
+    [SerializeField]private Vector3 targPosEnd;
+    [SerializeField]private Vector3 direction;
+    private float magnitudeDirection;
+    private float tempMagnitedeDirection;
+    
     #endregion
 
     #region properties
@@ -26,15 +33,69 @@ public class MoveToTarget : MonoBehaviour
 
     #region Unity functions
 
+    private void Start()
+    {
+        tempMagnitedeDirection = magnitudeDirection;
+    }
+
     private void FixedUpdate()
     {
-        Move();
+        Debug.DrawLine(rig.velocity,rig.velocity * 10f,Color.black);
+        //Move();
     }
 
     #endregion
 
     #region public functions
-
+    
+    public void Move()
+    {
+        if (targPos != Vector3.zero && targPosEnd != Vector3.zero)
+        {
+            SetDirection();
+            SetMagnitude();
+            if (magnitudeDirection >= 1)
+            {
+                UseForce();  
+            }
+            Debug.Log(magnitudeDirection);
+            //transform.position = transform.position + (direction * mod);
+        }
+    }
+    
+    /// <summary>
+    /// Метод чтобы сделать rb.velocity с другого класса, не подключая дополнительно rigidbody 
+    /// </summary>
+    public void UseForce()
+    {
+        rig.velocity = direction * modVelocity * magnitudeDirection;
+        Debug.Log($"direction = {direction} | modVelocity = {modVelocity} | magnitude = {magnitudeDirection}, and rig.velocity = {rig.velocity}");  
+    }
+    
+    /// <summary>
+    /// Обнуленте векторов позиций, направления, и ускорения
+    /// </summary>
+    public void ResetPoints()
+    {
+        targPos = Vector3.zero;
+        targPosEnd = Vector3.zero;
+        direction = Vector3.zero;
+        rig.velocity = Vector3.zero;
+    }
+    
+    /// <summary>
+    /// Переключение типа движения таблетки, через меню в паузе
+    /// </summary>
+    public void MoveSecondVar()
+    {
+        moveSecondVar = !moveSecondVar;
+    }
+    
+    public void ChangeMod(int change)
+    {
+        modVelocity = change; 
+    }
+    
     public void SetTargetPosition(Vector3 vector)
     {
         targPos = vector;
@@ -49,59 +110,36 @@ public class MoveToTarget : MonoBehaviour
     {
         direction = vector;
     }
-    public void Move()
-    {
-        if (moveSecondVar)      //Если делаем вектор в сторону куба(синего)
-        {
-            targPosEnd = transform.position;
-        } 
     
-    
-        if (targPos != Vector3.zero && targPosEnd != Vector3.zero)
+    #endregion
+
+    #region private functions
+
+    private void SetDirection()
+    {
+        direction = (targPos - targPosEnd).normalized;
+        direction.y = 0;  
+    }
+
+    private void SetMagnitude()
+    {
+        if (tempMagnitedeDirection == 0)
         {
-            direction = (targPos - targPosEnd).normalized;
-            direction.y = 0;
-            UseForce(false);
-            //transform.position = transform.position + (direction * mod);
+            magnitudeDirection = (targPos - targPosEnd).magnitude;  
         }
-    }
-    /// <summary>
-    /// Метод чтобы сделать rb.AddForce() с другого класса, не подключая дополнительно rigidbody 
-    /// </summary>
-    public void UseForce(bool usingWall)
-    {
-        if (!usingWall)
+        if (magnitudeDirection < 1)
         {
-            rig.AddForce(direction * modVelocity, ForceMode.VelocityChange);
+            magnitudeDirection = 1;
         }
-        else
+        if (magnitudeDirection > 10)
         {
-            rig.AddForce(direction * modVelocity * modReducedVelocity, ForceMode.VelocityChange);
+            magnitudeDirection /= 10f;
         }
-   
-    }
-    /// <summary>
-    /// Обнуленте векторов позиций, направления, и ускорения
-    /// </summary>
-    public void ResetPoints()
-    {
-        targPos = Vector3.zero;
-        targPosEnd = Vector3.zero;
-        direction = Vector3.zero;
-        rig.velocity = Vector3.zero;
-    }
-    /// <summary>
-    /// Переключение типа движения таблетки, через меню в паузе
-    /// </summary>
-    public void MoveSecondVar()
-    {
-        moveSecondVar = !moveSecondVar;
-    }
-    public void ChangeMod(int change)
-    {
-        modVelocity = change; 
+        if (tempMagnitedeDirection != magnitudeDirection)
+        {
+            tempMagnitedeDirection = magnitudeDirection;
+        }
     }
 
     #endregion
-    
 }

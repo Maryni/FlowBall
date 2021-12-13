@@ -7,10 +7,7 @@ public class LevelChanger : MonoBehaviour
 {
     #region Inspector variables
 
-    [SerializeField] Text textField;
-    [SerializeField] NavMeshAgent navMeshAgent;
-    [SerializeField] BoxDestroyer boxDestroyer;
-    [SerializeField] ProtectorAgent protectorAgent;
+    [SerializeField] private Text textField;
 
     #endregion
 
@@ -19,12 +16,18 @@ public class LevelChanger : MonoBehaviour
     private UnityAction action;
 
     #endregion
+    
     #region public functions
 
-    public void SetAction(UnityAction unityAction)
+    public void SetAction(params UnityAction[] unityAction)
     {
-        action+= unityAction;
+        for (int i = 0; i < unityAction.Length; i++)
+        {
+            action+= unityAction[i]; 
+        }
+        
     }
+    
     /// <summary>
     /// Когда кол-во DestroyCount от ящиков = 3, лвл ++, и заново
     /// </summary>
@@ -33,16 +36,9 @@ public class LevelChanger : MonoBehaviour
         int a = int.Parse(textField.text); 
         a++;
         textField.text = a.ToString();
-        for(int i =0; i<3;i++)
-        {
-            boxDestroyer.boxes[i].SetActive(true);
-        }
         action?.Invoke();
-        navMeshAgent.speed += 0.5f;
-        
     }
 
     #endregion
 
-    
 }

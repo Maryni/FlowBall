@@ -68,7 +68,6 @@ MonoBehaviour:
   textField: {fileID: 0}
   navMeshAgent: {fileID: 0}
   boxDestroyer: {fileID: 0}
-  protectorAgent: {fileID: 0}
 --- !u!114 &3544184963247117910
 MonoBehaviour:
   m_ObjectHideFlags: 0

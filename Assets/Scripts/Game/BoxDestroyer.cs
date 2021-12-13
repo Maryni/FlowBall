@@ -7,8 +7,7 @@ public class BoxDestroyer : MonoBehaviour
 {
     #region Inspector variables
 
-    [SerializeField] public List<GameObject> boxes;
-    [SerializeField] LevelChanger levelChanger;
+    [SerializeField] private List<GameObject> boxes;
 
     #endregion 
     
@@ -22,10 +21,9 @@ public class BoxDestroyer : MonoBehaviour
     #region properties
 
     public int DestroyCount => destroyCount;
+    public List<GameObject> Boxes => boxes;
 
     #endregion
-
-
 
     #region Unity functions
 
@@ -52,6 +50,14 @@ public class BoxDestroyer : MonoBehaviour
     public void SetAction(UnityAction action)
     {
         actionOnCollision = action;
+    }
+
+    public void SetBoxesActive()
+    {
+        for (int i = 0; i < boxes.Count; i++)
+        {
+            boxes[i].SetActive(true);
+        }
     }
     
     public void SetCountZero()
