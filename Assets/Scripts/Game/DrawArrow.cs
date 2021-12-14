@@ -1,66 +1,67 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class DrawArrow : MonoBehaviour
 {
     #region Inspector variables
 
-    [SerializeField] Vector3 startPosition;
-    [SerializeField] Vector3 endPosition;
-    [SerializeField] Transform pointToLook;
-    [SerializeField] Transform transformStartPos;
-    [SerializeField] MoveToTarget moveToTarget;
-    
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject point;
+
     #endregion
 
     #region private variables
-
-    private Transform _temp;
-
-    #endregion
-
-    #region Unity functions
-
-    private void FixedUpdate()
-    {
-        TakePositionForDrawing();
-        Strech(gameObject, startPosition, endPosition);
-    }
+    
+    private Vector3 startPosition;
+    private Vector3 endPosition;
+    private Transform tempTransform;
+    private int scaleMod = 32;
 
     #endregion
 
     #region public funtions
 
-    public void Strech(GameObject sprite, Vector3 initialPosition, Vector3 finalPosition)
+    public void SetStartPoint(GameObject gameObject)
+    {
+        player = gameObject;
+    }
+    
+    public void SetEndPoint(GameObject gameObject)
+    {
+        point = gameObject;
+    }
+
+    public void Draw()
+    {
+        SetPoints();
+        Strech(gameObject, startPosition, endPosition);
+    }
+    
+    #endregion
+    
+    #region private functions
+
+    private void Strech(GameObject sprite, Vector3 initialPosition, Vector3 finalPosition)
     {
         Vector3 centerPos = (initialPosition + finalPosition) / 2f;
         sprite.transform.position = centerPos;
         Vector3 direction = (finalPosition - initialPosition).normalized;
         sprite.transform.right = direction;
-        Vector3 scale = new Vector3(1, 4, 1); //именно поэтому scale.y 4 а не 1, тогда стрелка более толстая и её хорошо видно
+        Vector3 scale = new Vector3(1, 3, 1); //magic numbers for set good view on arrow
         scale.x = Vector3.Distance(initialPosition, finalPosition);
-        _temp = sprite.transform;
-        sprite.transform.localScale = scale/32; //это идеальные значения чтобы стрелку было видно
-        sprite.transform.rotation = Quaternion.Euler(270, _temp.rotation.eulerAngles.y, _temp.rotation.eulerAngles.z); //ставим угол по X 90, тоесть стрелка нормально видна
-        if(moveToTarget.MoveSecondVariant)
-            moveToTarget.ChangeMod((int)(scale.x/8)); //и отдаём mod половину от scale.x, тоесть половину разницы меж точкой A и B
+        tempTransform = sprite.transform;
+        sprite.transform.localScale = scale/scaleMod; 
+        sprite.transform.rotation = Quaternion.Euler(
+            270, 
+            tempTransform.rotation.eulerAngles.y, 
+            tempTransform.rotation.eulerAngles.z); 
+        
     }
 
-    #endregion
-
-    #region private functions
-
-    private void TakePositionForDrawing()
+    private void SetPoints()
     {
-        if (moveToTarget.MoveSecondVariant)
-        {
-            startPosition = transformStartPos.position;
-            endPosition = moveToTarget.TargetPosition;
-        }
-        else
-        {
-            startPosition = moveToTarget.TargetPositionEnd;
-            endPosition = moveToTarget.TargetPosition;
-        }
+        endPosition = player.transform.position;;
+        startPosition = point.transform.position;
     }
 
     #endregion

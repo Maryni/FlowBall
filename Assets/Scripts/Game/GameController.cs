@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     private LevelChanger levelChanger;
     private BoxDestroyer boxDestroyer;
     private Walls wallCollision;
+    private DrawArrow drawArrow;
     private GameObject blueBox;
     
     #endregion
@@ -62,6 +63,13 @@ public class GameController : MonoBehaviour
         if (blueBox == null)
         {
             blueBox = FindObjectOfType<FindMe>().gameObject;
+            blueBox.SetActive(false);
+        }
+
+        if (drawArrow == null)
+        {
+            drawArrow = moveToTarget.GetComponentInChildren<DrawArrow>();
+            drawArrow.gameObject.SetActive(false);
         }
         SetActionsOnStart();
     }
@@ -74,11 +82,19 @@ public class GameController : MonoBehaviour
     {
         takeMousePosition.SetCamera(Camera.main);
         takeMousePosition.SetBlueBox(blueBox);
+        drawArrow.SetStartPoint(moveToTarget.gameObject);
+        drawArrow.SetEndPoint(blueBox);
         protectorAgent.SetPlayerTransform(moveToTarget.transform);
         protectorAgent.SetActionOnCollision(
             ()=>moveToTarget.ResetPoints(),
             () =>moveToTarget.ResetPosition());
-        takeMousePosition.SetActions(
+        takeMousePosition.SetActionsOnMovingBlueBox(
+            ()=>ShowBlueBox(),
+            ()=>ShowArrow(),
+            ()=>drawArrow.Draw());
+        takeMousePosition.SetActionsOnBallReadyToMove(
+            ()=>HideBlueBox(),
+            ()=>HideArrow(),
             ()=>moveToTarget.SetTargetPosition(moveToTarget.gameObject.transform.position),
             ()=>moveToTarget.SetTargetPositionEnd(takeMousePosition.EndPoint),
             ()=>moveToTarget.Move(true));
@@ -94,5 +110,37 @@ public class GameController : MonoBehaviour
         boxDestroyer.SetActionOnThirdCollision(()=>levelChanger.ChangeLevel());
     }
 
+    private void ShowBlueBox()
+    {
+        if (!blueBox.activeSelf)
+        {
+            blueBox.SetActive(true);   
+        }
+    }
+
+    private void HideBlueBox()
+    {
+        if (blueBox.activeSelf)
+        {
+            blueBox.SetActive(false);   
+        }
+    }
+
+    private void ShowArrow()
+    {
+        if (!drawArrow.gameObject.activeSelf)
+        {
+            drawArrow.gameObject.SetActive(true);
+        }
+    }
+
+    private void HideArrow()
+    {
+        if (drawArrow.gameObject.activeSelf)
+        {
+            drawArrow.gameObject.SetActive(false);
+        }
+    }
+    
     #endregion
 }

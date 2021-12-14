@@ -117,7 +117,7 @@ public class MoveToTarget : MonoBehaviour
         {
             magnitudeDirection = (targPos - targPosEnd).magnitude;  
         }
-        
+        //все дальнейшие значения это магические числа для более комфортного геймплея
         if (magnitudeDirection < 1)
         {
             magnitudeDirection = 1;

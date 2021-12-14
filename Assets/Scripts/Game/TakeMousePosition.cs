@@ -15,6 +15,7 @@ public class TakeMousePosition : MonoBehaviour
     private Vector3 startPoint;
     private Vector3 endPoint;
     private GameObject point;
+    private UnityAction actionWhenPlayerMoveBlueBox;
     private UnityAction actionWhenBallReadyToMove;
     
 
@@ -47,11 +48,19 @@ public class TakeMousePosition : MonoBehaviour
         point = gameObject;
     }
 
-    public void SetActions(params UnityAction[] action)
+    public void SetActionsOnBallReadyToMove(params UnityAction[] actions)
     {
-        for (int i = 0; i < action.Length; i++)
+        for (int i = 0; i < actions.Length; i++)
         {
-            actionWhenBallReadyToMove += action[i]; 
+            actionWhenBallReadyToMove += actions[i]; 
+        }
+        
+    }
+    public void SetActionsOnMovingBlueBox(params UnityAction[] actions)
+    {
+        for (int i = 0; i < actions.Length; i++)
+        {
+            actionWhenPlayerMoveBlueBox += actions[i]; 
         }
         
     }
@@ -64,8 +73,7 @@ public class TakeMousePosition : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            // Vector3 objPosition = cam.ScreenToWorldPoint(mousePos);
-            // point.transform.position = objPosition;
+            
             var ray = cam.ScreenPointToRay(mousePos);
             RaycastHit hit = new RaycastHit();
 
@@ -73,6 +81,7 @@ public class TakeMousePosition : MonoBehaviour
             {
                 hit.point = new Vector3(hit.point.x,0f,hit.point.z);
                 point.transform.position = hit.point;
+                actionWhenPlayerMoveBlueBox?.Invoke();
             }
         }
         if (Input.GetMouseButtonUp(0))
