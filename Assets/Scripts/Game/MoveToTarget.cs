@@ -5,26 +5,24 @@ public class MoveToTarget : MonoBehaviour
 {
     #region Inspector variables
     
-    [SerializeField] private float modVelocity; 
-    
-    [SerializeField] private bool moveSecondVar;
+    [SerializeField] private float modVelocity;
 
     #endregion
 
     #region private variables
     
-    [SerializeField]private Vector3 targPos;
-    [SerializeField]private Vector3 targPosEnd;
-    [SerializeField]private Vector3 direction;
+    private Vector3 targPos;
+    private Vector3 targPosEnd;
+    private Vector3 direction;
     private float magnitudeDirection;
     private float tempMagnitedeDirection;
     private Rigidbody rig;
+    private Vector3 defaultPosition;
     
     #endregion
 
     #region properties
-
-    public bool MoveSecondVariant => moveSecondVar;
+    
     public Vector3 Direction => direction;
     public Vector3 TargetPosition => targPos;
     public Vector3 TargetPositionEnd => targPosEnd;
@@ -40,40 +38,31 @@ public class MoveToTarget : MonoBehaviour
         {
             rig = GetComponent<Rigidbody>();
         }
-    }
 
-    private void FixedUpdate()
-    {
-        Debug.DrawLine(rig.velocity,rig.velocity * 10f,Color.black);
-        //Move();
+        defaultPosition = transform.position;
     }
 
     #endregion
 
     #region public functions
     
-    public void Move()
+    public void Move(bool recalculateMagnitude)
     {
         if (targPos != Vector3.zero && targPosEnd != Vector3.zero)
         {
             SetDirection();
-            SetMagnitude();
+            SetMagnitude(recalculateMagnitude);
             if (magnitudeDirection >= 1)
             {
                 UseForce();  
             }
             Debug.Log(magnitudeDirection);
-            //transform.position = transform.position + (direction * mod);
         }
     }
     
-    /// <summary>
-    /// Метод чтобы сделать rb.velocity с другого класса, не подключая дополнительно rigidbody 
-    /// </summary>
     public void UseForce()
     {
         rig.velocity = direction * modVelocity * magnitudeDirection;
-        Debug.Log($"direction = {direction} | modVelocity = {modVelocity} | magnitude = {magnitudeDirection}, and rig.velocity = {rig.velocity}");  
     }
     
     /// <summary>
@@ -86,15 +75,12 @@ public class MoveToTarget : MonoBehaviour
         direction = Vector3.zero;
         rig.velocity = Vector3.zero;
     }
-    
-    /// <summary>
-    /// Переключение типа движения таблетки, через меню в паузе
-    /// </summary>
-    public void MoveSecondVar()
+
+    public void ResetPosition()
     {
-        moveSecondVar = !moveSecondVar;
+        transform.position = defaultPosition;
     }
-    
+
     public void ChangeMod(int change)
     {
         modVelocity = change; 
@@ -125,20 +111,28 @@ public class MoveToTarget : MonoBehaviour
         direction.y = 0;  
     }
 
-    private void SetMagnitude()
+    private void SetMagnitude(bool recalculate)
     {
-        if (tempMagnitedeDirection == 0)
+        if (tempMagnitedeDirection == 0 || recalculate)
         {
             magnitudeDirection = (targPos - targPosEnd).magnitude;  
         }
+        
         if (magnitudeDirection < 1)
         {
             magnitudeDirection = 1;
         }
+
+        if (magnitudeDirection > 3.5f)
+        {
+            magnitudeDirection /= 2f;
+        }
+        
         if (magnitudeDirection > 10)
         {
             magnitudeDirection /= 10f;
         }
+        
         if (tempMagnitedeDirection != magnitudeDirection)
         {
             tempMagnitedeDirection = magnitudeDirection;

@@ -9,13 +9,14 @@ public class GameController : MonoBehaviour
     #region Inspector variables
 
     [SerializeField] private float addEnemySpeed;
-    [SerializeField] private TakeMousePosition takeMousePosition;
-    [SerializeField] private MoveToTarget moveToTarget;
-    [SerializeField] private ProtectorAgent protectorAgent;
-    [SerializeField] private NavMeshAgent navMeshAgent;
-    [SerializeField] private LevelChanger levelChanger;
-    [SerializeField] private BoxDestroyer boxDestroyer;
-    [SerializeField] private Walls wallCollision;
+    private TakeMousePosition takeMousePosition;
+    private MoveToTarget moveToTarget;
+    private ProtectorAgent protectorAgent;
+    private NavMeshAgent navMeshAgent;
+    private LevelChanger levelChanger;
+    private BoxDestroyer boxDestroyer;
+    private Walls wallCollision;
+    private GameObject blueBox;
     
     #endregion
     
@@ -23,6 +24,16 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        if (levelChanger == null)
+        {
+            levelChanger = GetComponent<LevelChanger>();
+        }
+
+        if (takeMousePosition == null)
+        {
+            takeMousePosition = GetComponent<TakeMousePosition>();
+        }
+        
         if (moveToTarget == null)
         {
             moveToTarget = FindObjectOfType<MoveToTarget>();
@@ -47,6 +58,11 @@ public class GameController : MonoBehaviour
         {
             wallCollision = moveToTarget.gameObject.GetComponent<Walls>();
         }
+
+        if (blueBox == null)
+        {
+            blueBox = FindObjectOfType<FindMe>().gameObject;
+        }
         SetActionsOnStart();
     }
 
@@ -57,19 +73,24 @@ public class GameController : MonoBehaviour
     private void SetActionsOnStart()
     {
         takeMousePosition.SetCamera(Camera.main);
+        takeMousePosition.SetBlueBox(blueBox);
+        protectorAgent.SetPlayerTransform(moveToTarget.transform);
+        protectorAgent.SetActionOnCollision(
+            ()=>moveToTarget.ResetPoints(),
+            () =>moveToTarget.ResetPosition());
         takeMousePosition.SetActions(
-            ()=>moveToTarget.SetTargetPosition(takeMousePosition.StartPoint),
+            ()=>moveToTarget.SetTargetPosition(moveToTarget.gameObject.transform.position),
             ()=>moveToTarget.SetTargetPositionEnd(takeMousePosition.EndPoint),
-            ()=>moveToTarget.Move());
-        wallCollision.SetActionOnStartCollision(()=>wallCollision.SetCurrentDirection(moveToTarget.Direction));
-        wallCollision.SetActionOnFinishCollision(
+            ()=>moveToTarget.Move(true));
+        wallCollision.SetActionsOnStartCollision(()=>wallCollision.SetCurrentDirection(moveToTarget.Direction));
+        wallCollision.SetActionsOnFinishCollision(
             ()=>moveToTarget.SetDirection(-wallCollision.ReflectedDirection),
             ()=>moveToTarget.UseForce());
-        levelChanger.SetAction(
+        levelChanger.SetActions(
             ()=>boxDestroyer.SetBoxesActive(),
             ()=>navMeshAgent.speed+=addEnemySpeed,
-            ()=>protectorAgent.PlayerResetPosition());
-        boxDestroyer.SetActionOnAllCollision(()=>moveToTarget.Move());
+            ()=>protectorAgent.LevelResetPosition());
+        boxDestroyer.SetActionOnAllCollision(()=>moveToTarget.Move(false));
         boxDestroyer.SetActionOnThirdCollision(()=>levelChanger.ChangeLevel());
     }
 

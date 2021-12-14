@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
+using UnityEngine.XR.WSA.Input;
 
 public class ProtectorAgent : MonoBehaviour
 {
     #region Inspector variables
 
-    [SerializeField] NavMeshAgent navMeshAgent;
-    [SerializeField] Transform player;
-    [SerializeField] public Vector3 playerCheckPosition;
-    [SerializeField] public Vector3 agentCheckPosition;
-    [SerializeField] private MoveToTarget moveToTarget;
+    [SerializeField] private Transform player;
+
+    #endregion
+
+    #region private variables
+
+    private NavMeshAgent navMeshAgent;
+    private Vector3 agentDefaultPosition;
+    private UnityAction actionOnCollision;
 
     #endregion
 
@@ -17,8 +23,11 @@ public class ProtectorAgent : MonoBehaviour
     
     private void Start()
     {
-        playerCheckPosition = player.position;
-        agentCheckPosition = transform.position;
+        if (navMeshAgent == null)
+        {
+            navMeshAgent = GetComponent<NavMeshAgent>();
+        }
+        agentDefaultPosition = transform.position;
     }
     private void FixedUpdate()
     {
@@ -27,10 +36,9 @@ public class ProtectorAgent : MonoBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.name=="Ball")
+        if(collision.gameObject.GetComponent<MoveToTarget>())
         {
-            collision.gameObject.transform.Translate(playerCheckPosition);
-            PlayerResetPosition();
+            LevelResetPosition();
         }  
     }
     
@@ -38,13 +46,24 @@ public class ProtectorAgent : MonoBehaviour
 
     #region public functions
 
-    public void PlayerResetPosition()
+    public void LevelResetPosition()
     {
-        moveToTarget.ResetPoints();
-        player.position = playerCheckPosition;
-        transform.position = agentCheckPosition;
+        actionOnCollision?.Invoke();
+        transform.position = agentDefaultPosition;
     }
 
+    public void SetPlayerTransform(Transform transformPlayer)
+    {
+        player = transformPlayer;
+    }
+
+    public void SetActionOnCollision(params UnityAction[] actions)
+    {
+        for (int i = 0; i < actions.Length; i++)
+        {
+            actionOnCollision += actions[i]; 
+        }
+    }
     #endregion
 
     #region private functions

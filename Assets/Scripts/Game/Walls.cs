@@ -5,12 +5,6 @@ using UnityEngine.Events;
 
 public class Walls : MonoBehaviour
 {
-    #region Inspector variables
-
-    [SerializeField] private MoveToTarget moveToTarget;
-
-    #endregion
-
     #region private variables
 
     private Vector3 currentDirection;
@@ -43,14 +37,14 @@ public class Walls : MonoBehaviour
         currentDirection = direction;
     }
 
-    public void SetActionOnStartCollision(params UnityAction[] action)
+    public void SetActionsOnStartCollision(params UnityAction[] action)
     {
         for (int i = 0; i < action.Length; i++)
         {
             actionOnStartCollision += action[i];  
         }
     }
-    public void SetActionOnFinishCollision(params UnityAction[] action)
+    public void SetActionsOnFinishCollision(params UnityAction[] action)
     {
         for (int i = 0; i < action.Length; i++)
         {
@@ -58,17 +52,7 @@ public class Walls : MonoBehaviour
         }
         
     }
-    
-    // public void UseReflectedDirection()
-    // {
-    //     Debug.Log($"reflectedDirection = {reflectedDirection}");
-    //     moveToTarget.SetDirection(reflectedDirection);
-    //     moveToTarget.UseForce(); 
-    //     // moveToTarget.SetTargetPosition(thisPosition);
-    //     // moveToTarget.SetTargetPositionEnd(thisPosition - reflectedDirection);
-    //
-    // }
-    
+
     #endregion
     
     #region private functions
@@ -94,7 +78,6 @@ public class Walls : MonoBehaviour
             {
                 reflectedDirection = Vector3.Reflect(currentDirection, new Vector3(1, 0, 0));
             }
-            Debug.Log($"bum, with current direction = {currentDirection}");
             actionOnFinishCollision?.Invoke();    
         }
     }

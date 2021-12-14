@@ -34,7 +34,7 @@ public class BoxDestroyer : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Box"))
+        if(collision.gameObject.GetComponent<DestructableBox>())
         {
             collision.gameObject.SetActive(false);
             boxes.Add(collision.gameObject);
@@ -45,7 +45,6 @@ public class BoxDestroyer : MonoBehaviour
                 actionOnThirdCollision?.Invoke();
                 SetCountZero();
             }
-            
         }
     }
     

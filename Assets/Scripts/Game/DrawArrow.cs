@@ -12,9 +12,9 @@ public class DrawArrow : MonoBehaviour
     
     #endregion
 
-    #region private varaibles
+    #region private variables
 
-    Transform _temp;
+    private Transform _temp;
 
     #endregion
 

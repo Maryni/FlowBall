@@ -148,8 +148,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 568d4ba785d19cf46a546be22cd58fa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: 426715691}
   player: {fileID: 0}
-  playerCheckPosition: {x: 0, y: 0, z: 0}
-  agentCheckPosition: {x: 0, y: 0, z: 0}
-  moveToTarget: {fileID: 0}

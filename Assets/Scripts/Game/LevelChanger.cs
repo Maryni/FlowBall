@@ -19,11 +19,11 @@ public class LevelChanger : MonoBehaviour
     
     #region public functions
 
-    public void SetAction(params UnityAction[] unityAction)
+    public void SetActions(params UnityAction[] actions)
     {
-        for (int i = 0; i < unityAction.Length; i++)
+        for (int i = 0; i < actions.Length; i++)
         {
-            action+= unityAction[i]; 
+            action+= actions[i]; 
         }
         
     }
